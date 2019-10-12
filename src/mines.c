@@ -211,7 +211,7 @@ enum constJogo verificarResultado(MatrizInt* campo, MatrizInt* tela) {
 void imprimirJogo(MatrizInt* campo, MatrizInt* tela) {
     int i, j;
 
-    system("cmd /c cls");
+    system("cls");
     printf("====================================\n");
     printf(" CAMPO MINADO [por Vinicius Jardim]\n====================================\n\n");
     printf("      ");
@@ -269,7 +269,7 @@ void imprimirJogo(MatrizInt* campo, MatrizInt* tela) {
 void imprimirJogoWin(MatrizInt* campo, MatrizInt* tela) {
     int i, j;
 
-    system("cmd /c cls");
+    system("cls");
     printf("====================================\n");
     printf(" CAMPO MINADO [por Vinicius Jardim]\n====================================\n\n");
     printf("      ");
@@ -307,7 +307,7 @@ void imprimirJogoWin(MatrizInt* campo, MatrizInt* tela) {
 
 void imprimirAjuda() {
 
-    system("cmd /c cls");
+    system("cls");
     printf("====================================\n");
     printf(" CAMPO MINADO [por Vinicius Jardim]\n====================================\n\n");
 
@@ -355,6 +355,9 @@ enum constJogo interpretador(MatrizInt* campo, MatrizInt* tela, char* comando, i
             imprimirAjuda();
             return ERRO;
         }
+    }
+    else if(strcmp(comando, "> fwin\n") == 0) {
+        return GANHOU;
     }
     else if(comando[0] == '*') {
         strncpy(subStr, comando+1, 9);
@@ -413,7 +416,7 @@ enum constJogo menu(int *lin, int *col, int *nBombs) {
         imprimirJogoWin(campo, tela);
         printf("\n %d/%d bombas  |  -a para ajuda.\n====================================", nBandeiras, *nBombs);
         printf("\n Jogar: ");
-        scanf("%s", comando);
+        fgets(comando, 9, stdin);
         result = interpretador(campo, tela, comando, primeiraJogada, nBombs);
         if(result == CONTINUA && primeiraJogada) {
             primeiraJogada = FALSE;

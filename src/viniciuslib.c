@@ -90,10 +90,12 @@ int charEDigito(char c) {
 
 int strEDigito(char* str) {
     int cont = 0;
-    while(str[cont] != '\0') {
+    while(str[cont] != '\0' && str[cont] != '\n') {
         if(charEDigito(str[cont]) == FALSE)
             return FALSE;
         cont++;
     }
-    return TRUE;
+    if(cont > 0)
+        return TRUE;
+    return FALSE;
 }

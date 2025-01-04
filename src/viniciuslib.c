@@ -1,10 +1,3 @@
-/*
- * File:   viniciuslib.c
- * Author: Vinícius Jardim
- *
- * Created on 1 de Julho de 2011, 04:08
- */
-
 #include "viniciuslib.h"
 
 // Matriz ->
@@ -70,8 +63,7 @@ void imprimirMatrizInt(MatrizInt* m) {
 
 // Outras funções ->
 int meuRand(int min, int max) {
-    if(min > max)
-    {
+    if (min > max) {
         int aux = max;
         max = min;
         min = aux;
@@ -81,8 +73,7 @@ int meuRand(int min, int max) {
 }
 
 int charEDigito(char c) {
-    
-    if(c != '0' && c != '1' && c != '2' && c != '3' && c != '4' &&
+    if (c != '0' && c != '1' && c != '2' && c != '3' && c != '4' &&
             c != '5' && c != '6' && c != '7' && c != '8' && c != '9')
         return FALSE;
     return TRUE;
@@ -90,12 +81,14 @@ int charEDigito(char c) {
 
 int strEDigito(char* str) {
     int cont = 0;
-    while(str[cont] != '\0' && str[cont] != '\n') {
-        if(charEDigito(str[cont]) == FALSE)
+
+    while (str[cont] != '\0' && str[cont] != '\n') {
+        if (charEDigito(str[cont]) == FALSE)
             return FALSE;
         cont++;
     }
-    if(cont > 0)
-        return TRUE;
+
+    if (cont > 0) return TRUE;
+
     return FALSE;
 }

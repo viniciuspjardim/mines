@@ -1,10 +1,3 @@
-/* 
- * File:   viniciuslib.h
- * Author: Vinícius Jardim
- *
- * Created on 1 de Julho de 2011, 04:06
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,15 +1,151 @@
-#include "viniciuslib.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
-// Constantes para o campo ->
+// Booleanos
+#define FALSE 0
+#define TRUE 1
+
+// Limpar a tela no terminal
+#define LIMPAR_TELA "\\e[H\\e[2J"
+
+// Cores de fonte no terminal
+#define COR_PADRAO "\033[0m"
+#define PRETO "\033[0;30m"
+#define VERMELHO "\033[0;31m"
+#define VERDE "\033[0;32m"
+#define MARROM "\033[0;33m"
+#define AZUL "\033[0;34m"
+#define ROXO "\033[0;35m"
+#define CIANO "\033[0;36m"
+#define CINZA_CLARO "\033[0;37m"
+#define CINZA_ESCURO "\033[1;30m"
+#define VERMELHO_CLARO "\033[1;31m"
+#define VERDE_CLARO "\033[1;32m"
+#define AMARELO "\033[1;33m"
+#define AZUL_CLARO "\033[1;34m"
+#define ROXO_CLARO "\033[1;35m"
+#define CIANO_CLARO "\033[1;36m"
+#define BRANCO "\033[1;37m"
+
+typedef struct _1 {
+    int lin;
+    int col;
+    int** mat;
+} MatrizInt;
+
+MatrizInt* novaMatrizInt(int lin, int col);
+int setMatrizInt(MatrizInt *m, int lin, int col, int val);
+void freeMatrizInt(MatrizInt* m);
+void imprimirMatrizInt(MatrizInt* m);
+
+int meuRand(int min, int max);
+int charEDigito(char c);
+int strEDigito(char* str);
+
+// Matriz
+MatrizInt* novaMatrizInt(int lin, int col) {
+    MatrizInt* m = (MatrizInt*) malloc(sizeof (MatrizInt));
+
+    m->lin = lin;
+    m->col = col;
+
+    m->mat = (int**) malloc(lin * sizeof (int*));
+    if (m->mat == NULL) {
+        return NULL;
+    }
+
+    int i, j;
+    for (i = 0; i < lin; i++) {
+        m->mat[i] = (int*) malloc(col * sizeof (int));
+        if (m->mat[i] == NULL) {
+            return NULL;
+        }
+        for (j = 0; j < col; j++) {
+            m->mat[i][j] = 0;
+        }
+    }
+    return m;
+}
+
+int setMatrizInt(MatrizInt *m, int lin, int col, int val) {
+    if (m == NULL) return FALSE;
+
+    if (lin >= m->lin || col >= m->col || lin < 0 || col < 0)
+        return FALSE;
+    else
+        m->mat[lin][col] = val;
+
+    return TRUE;
+}
+
+void freeMatrizInt(MatrizInt* m) {
+    if (m == NULL) return;
+
+    int i;
+    for (i = 0; i < m->lin; i++) {
+        free(m->mat[i]);
+    }
+    free(m->mat);
+    free(m);
+    m = NULL;
+}
+
+void imprimirMatrizInt(MatrizInt* m) {
+    if (m == NULL) return;
+
+    int i, j;
+    for (i = 0; i < m->lin; i++) {
+        for (j = 0; j < m->col; j++) {
+            printf("%d; ", m->mat[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Outras funções
+int meuRand(int min, int max) {
+    if (min > max) {
+        int aux = max;
+        max = min;
+        min = aux;
+    }
+    int intervalo = max - min +1;
+    return (rand() % intervalo) + min;
+}
+
+int charEDigito(char c) {
+    if (c != '0' && c != '1' && c != '2' && c != '3' && c != '4' &&
+            c != '5' && c != '6' && c != '7' && c != '8' && c != '9')
+        return FALSE;
+    return TRUE;
+}
+
+int strEDigito(char* str) {
+    int cont = 0;
+
+    while (str[cont] != '\0' && str[cont] != '\n') {
+        if (charEDigito(str[cont]) == FALSE)
+            return FALSE;
+        cont++;
+    }
+
+    if (cont > 0) return TRUE;
+
+    return FALSE;
+}
+
+// Constantes para o campo
 #define BOMB -1
 #define VAZIO 0
 
-// Constantes para a tela ->
+// Constantes para a tela
 #define BANDEIRA -1
 #define FECHADO 0
-#define ABERTO 1 // trocar: abr 1 e fec 0;
+#define ABERTO 1 // trocar: aberto 1 e fechado 0;
 
-// Constantes para o jogo ->
+// Constantes para o jogo
 enum constJogo {
     INICIOJOGO,
     PERDEU,
@@ -43,6 +179,7 @@ int iniciarCampo(MatrizInt* campo, int nBombs, int primeiroAberto) {
     int cColAberto = primeiroAberto % campo->col;
 
     int i, j, nBombsAux = nBombs;
+
     for (i = 0; i < campo->lin; i++) {
         for (j = 0; j < campo->col; j++) {
             if (nBombsAux == 0) break;
@@ -202,10 +339,11 @@ enum constJogo verificarResultado(MatrizInt* campo, MatrizInt* tela) {
 void imprimirJogo(MatrizInt* campo, MatrizInt* tela) {
     int i, j;
 
-    system("cls");
+    system("clear");
     printf("====================================\n");
     printf(" CAMPO MINADO [por Vinicius Jardim]\n====================================\n\n");
     printf("      ");
+
     for (i = 0; i < campo->col; i++) {
         if (i < 10)
             printf(" %d ", i);
@@ -213,6 +351,7 @@ void imprimirJogo(MatrizInt* campo, MatrizInt* tela) {
             printf("%d ", i);
     }
     printf("\n      ");
+
     for (i = 0; i < campo->col; i++) {
         printf("---");
     }
@@ -260,7 +399,7 @@ void imprimirJogo(MatrizInt* campo, MatrizInt* tela) {
 void imprimirJogoWin(MatrizInt* campo, MatrizInt* tela) {
     int i, j;
 
-    system("cls");
+    system("clear");
     printf("====================================\n");
     printf(" CAMPO MINADO [por Vinicius Jardim]\n====================================\n\n");
     printf("      ");
@@ -297,7 +436,7 @@ void imprimirJogoWin(MatrizInt* campo, MatrizInt* tela) {
 }
 
 void imprimirAjuda() {
-    system("cls");
+    system("clear");
     printf("====================================\n");
     printf(" CAMPO MINADO [por Vinicius Jardim]\n====================================\n\n");
 

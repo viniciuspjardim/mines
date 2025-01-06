@@ -7,9 +7,6 @@
 #define FALSE 0
 #define TRUE 1
 
-// Clear the screen in the terminal
-#define CLEAR_SCREEN "\\e[H\\e[2J"
-
 // Font colors in the terminal
 #define DEFAULT_COLOR "\033[0m"
 #define BLACK "\033[0;30m"
@@ -172,7 +169,6 @@ void openRec(IntMatrix* field, IntMatrix* screen, int row, int col);
 void markCell(IntMatrix* field, IntMatrix* screen, int openPos);
 enum gameConsts checkResult(IntMatrix* field, IntMatrix* screen);
 void printGame(IntMatrix* field, IntMatrix* screen);
-void printGameWin(IntMatrix* field, IntMatrix* screen);
 void printHelp();
 void revealGame(IntMatrix* screen);
 enum gameConsts interpreter(IntMatrix* field, IntMatrix* screen, char* command, int firstMove, int* bombCount);
@@ -416,48 +412,6 @@ void printGame(IntMatrix* field, IntMatrix* screen) {
     }
 }
 
-// Print the game when won (no colors on the numbers, simpler output)
-void printGameWin(IntMatrix* field, IntMatrix* screen) {
-    int i, j;
-
-    system("clear");
-    printf("====================================\n");
-    printf(" Minesweeper [by Vinicius Jardim]\n");
-    printf("====================================\n\n");
-    printf("      ");
-
-    for (i = 0; i < field->cols; i++) {
-        if (i < 10)
-            printf(" %d ", i);
-        else if (i < 100)
-            printf("%d ", i);
-    }
-    printf("\n      ");
-    for (i = 0; i < field->cols; i++) {
-        printf("---");
-    }
-    printf("\n");
-
-    for (i = 0; i < field->rows; i++) {
-        printf("%5d|", i * field->cols);
-        for (j = 0; j < field->cols; j++) {
-            if (screen->mat[i][j] == FLAG)
-                printf(" P ");
-            else if (screen->mat[i][j] == CLOSED)
-                printf("[ ]");
-            else if (screen->mat[i][j] == OPENED && field->mat[i][j] == BOMB)
-                printf(" x ");
-            else if (screen->mat[i][j] == OPENED && field->mat[i][j] == EMPTY)
-                printf(" . ");
-            else if (screen->mat[i][j] == OPENED) {
-                int val = field->mat[i][j];
-                printf(" %d ", val);
-            }
-        }
-        printf("\n");
-    }
-}
-
 // Print help/instructions
 void printHelp() {
     system("clear");
@@ -466,9 +420,9 @@ void printHelp() {
     printf("====================================\n\n");
 
     printf("Instructions:\n");
-    printf("   Move        To reveal, type the number of the square " DARK_GRAY "[ ]" DEFAULT_COLOR " you want.\n");
-    printf("               That number is (rowIndex * numberOfColumns) + colIndex.\n");
-    printf("   Mark        To mark a mine, type an asterisk " DARK_GRAY "*" DEFAULT_COLOR ", then do the same\n");
+    printf("   Move        To reveal, type the number of the square " GREEN "[ ]" DEFAULT_COLOR " you want.\n");
+    printf("               That number is number on the row puls the number on the col.\n");
+    printf("   Mark        To mark a mine, type an asterisk " GREEN "*" DEFAULT_COLOR ", then do the same\n");
     printf("               procedure as above to find the square number.\n\n");
 
     printf("Commands:\n");
@@ -483,7 +437,7 @@ void printHelp() {
     printf("   -mine  num  Number of mines.\n\n");
 
     printf("Version: 0.11; July 2011.\n");
-    printf("Press " DARK_GRAY "r" DEFAULT_COLOR " to return: ");
+    printf("Press " GREEN "r" DEFAULT_COLOR " to return: ");
     char* c = (char*)malloc(sizeof(char));
     scanf("%s", c);
     free(c);
@@ -573,8 +527,8 @@ enum gameConsts menuGame(int *rows, int *cols, int *bombCount) {
 
     while (TRUE) {
         int nFlags = countFlags(screen);
-        printGameWin(field, screen);
-        printf("\n %d/%d mines | h [help] | q [quit]\n====================================", nFlags, *bombCount);
+        printGame(field, screen);
+        printf("\n %d/%d mines | " GREEN "h" DEFAULT_COLOR " [help] | " GREEN "q" DEFAULT_COLOR " [quit]\n====================================", nFlags, *bombCount);
         printf("\n Move: ");
         fgets(command, 9, stdin);
 
@@ -594,7 +548,7 @@ enum gameConsts menuGame(int *rows, int *cols, int *bombCount) {
     }
 
     revealGame(screen);
-    printGameWin(field, screen);
+    printGame(field, screen);
     if (result == LOST) {
         printf(RED);
         printf("\n YOU LOST!");
@@ -609,7 +563,7 @@ enum gameConsts menuGame(int *rows, int *cols, int *bombCount) {
 
     printf(" Time: %dm %ds\n====================================\n", (int)totalTime / 60, (int)totalTime % 60);
 
-    printf(" n [new game] | q [quit]: ");
+    printf(GREEN " n" DEFAULT_COLOR " [new game] | " GREEN "q" DEFAULT_COLOR " [quit]: ");
     scanf("%s", command);
 
     result = interpreter(field, screen, command, FALSE, bombCount);

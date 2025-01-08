@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 
-// Booleans
 #define FALSE 0
 #define TRUE 1
 
@@ -59,6 +58,7 @@ IntMatrix* newIntMatrix(int rows, int cols) {
     }
 
     int i, j;
+
     for (i = 0; i < rows; i++) {
         m->mat[i] = (int*) malloc(cols * sizeof(int));
         if (m->mat[i] == NULL) {
@@ -68,6 +68,7 @@ IntMatrix* newIntMatrix(int rows, int cols) {
             m->mat[i][j] = 0;
         }
     }
+
     return m;
 }
 
@@ -88,9 +89,11 @@ void freeIntMatrix(IntMatrix* m) {
     if (m == NULL) return;
 
     int i;
+
     for (i = 0; i < m->rows; i++) {
         free(m->mat[i]);
     }
+
     free(m->mat);
     free(m);
     m = NULL;
@@ -101,6 +104,7 @@ void printIntMatrix(IntMatrix* m) {
     if (m == NULL) return;
 
     int i, j;
+
     for (i = 0; i < m->rows; i++) {
         for (j = 0; j < m->cols; j++) {
             printf("%d; ", m->mat[i][j]);
@@ -116,13 +120,15 @@ int myRand(int min, int max) {
         max = min;
         min = temp;
     }
+
     int interval = max - min + 1;
+
     return (rand() % interval) + min;
 }
 
 int charIsDigit(char c) {
-    if (c < '0' || c > '9')
-        return FALSE;
+    if (c < '0' || c > '9') return FALSE;
+
     return TRUE;
 }
 
@@ -246,16 +252,15 @@ void changeBomb(IntMatrix* field, int row, int col) {
     if (row >= field->rows || col >= field->cols) return;
     if (field->mat[row][col] != BOMB) return;
 
-    int i, j, done = FALSE;
+    int i, j;
+
     for (i = 0; i < field->rows; i++) {
         for (j = 0; j < field->cols; j++) {
             if (field->mat[i][j] == EMPTY) {
                 field->mat[i][j] = BOMB;
-                done = TRUE;
-                break;
+                return;
             }
         }
-        if (done) break;
     }
 }
 
@@ -295,34 +300,32 @@ enum gameConsts openCell(IntMatrix* field, IntMatrix* screen, int openPos) {
     } else {
         openRec(field, screen, openRow, openCol);
     }
+
     return checkResult(field, screen);
 }
 
 // Recursive opening of empty areas
 void openRec(IntMatrix* field, IntMatrix* screen, int row, int col) {
+    // Return when out of matrix bounds
+    if (row < 0 || row >= field->rows || col < 0 || col >= field->cols) return;
+
+    // Return if it's already opened or a bomb
     if (screen->mat[row][col] == OPENED || field->mat[row][col] == BOMB) return;
+
     screen->mat[row][col] = OPENED;
 
     // Stop if the cell is not EMPTY
     if (field->mat[row][col] != EMPTY) return;
 
     // Recursively open all neighbors if it is EMPTY
-    if (row - 1 >= 0 && col - 1 >= 0)
-        openRec(field, screen, row - 1, col - 1);
-    if (row - 1 >= 0)
-        openRec(field, screen, row - 1, col);
-    if (row - 1 >= 0 && col + 1 < field->cols)
-        openRec(field, screen, row - 1, col + 1);
-    if (col + 1 < field->cols)
-        openRec(field, screen, row, col + 1);
-    if (row + 1 < field->rows && col + 1 < field->cols)
-        openRec(field, screen, row + 1, col + 1);
-    if (row + 1 < field->rows)
-        openRec(field, screen, row + 1, col);
-    if (row + 1 < field->rows && col - 1 >= 0)
-        openRec(field, screen, row + 1, col - 1);
-    if (col - 1 >= 0)
-        openRec(field, screen, row, col - 1);
+    openRec(field, screen, row - 1, col - 1);
+    openRec(field, screen, row - 1, col);
+    openRec(field, screen, row - 1, col + 1);
+    openRec(field, screen, row, col + 1);
+    openRec(field, screen, row + 1, col + 1);
+    openRec(field, screen, row + 1, col);
+    openRec(field, screen, row + 1, col - 1);
+    openRec(field, screen, row, col - 1);
 }
 
 // Mark (or unmark) a cell with a flag
@@ -340,23 +343,19 @@ void markCell(IntMatrix* field, IntMatrix* screen, int openPos) {
 // Check if the game is won or should continue
 enum gameConsts checkResult(IntMatrix* field, IntMatrix* screen) {
     int i, j;
-    enum gameConsts result = WON;
 
     for (i = 0; i < field->rows; i++) {
         for (j = 0; j < field->cols; j++) {
             // If there's still a CLOSED cell that isn't a bomb
             if (screen->mat[i][j] == CLOSED && field->mat[i][j] != BOMB) {
-                result = KEEPGOING;
-                break;
+                return KEEPGOING;
             }
         }
-        if (result == KEEPGOING) break;
     }
 
-    return result;
+    return WON;
 }
 
-// Print the game in progress (with colors)
 void printGame(IntMatrix* field, IntMatrix* screen) {
     int i, j;
 
@@ -374,6 +373,7 @@ void printGame(IntMatrix* field, IntMatrix* screen) {
             printf("%d ", i);
     }
     printf("\n      ");
+
     for (i = 0; i < field->cols; i++) {
         printf("---");
     }
@@ -412,7 +412,6 @@ void printGame(IntMatrix* field, IntMatrix* screen) {
     }
 }
 
-// Print help/instructions
 void printHelp() {
     system("clear");
     printf("====================================\n");
@@ -446,6 +445,7 @@ void printHelp() {
 // Reveal the entire field
 void revealGame(IntMatrix* screen) {
     int i, j;
+
     for (i = 0; i < screen->rows; i++) {
         for (j = 0; j < screen->cols; j++) {
             screen->mat[i][j] = OPENED;
@@ -468,28 +468,35 @@ enum gameConsts interpreter(IntMatrix* field, IntMatrix* screen, char* command, 
         printHelp();
         return ERROR;
     }
+    // Secret cheat code to force a win
     else if (strcmp(command, "> fwin\n") == 0) {
-        // Secret cheat code to force a win
         return WON;
     }
     else if (command[0] == '*') {
         strncpy(subStr, command + 1, 9);
-        subStr[9] = '\0'; // Ensure null-termination
+        // Ensure null-termination
+        subStr[9] = '\0';
+
         if (strIsDigit(subStr)) {
             openPos = atoi(subStr);
             if (openPos < field->rows * field->cols && openPos >= 0)
                 markCell(field, screen, openPos);
+
             return ERROR;
         }
     }
     else if (strIsDigit(command)) {
         openPos = atoi(command);
+
         if (openPos < field->rows * field->cols && openPos >= 0) {
-            if (firstMove)
+            if (firstMove) {
                 initField(field, *bombCount, openPos);
+            }
+
             return openCell(field, screen, openPos);
         }
     }
+
     return ERROR;
 }
 
@@ -507,11 +514,13 @@ void deallocate(IntMatrix* field, IntMatrix* screen, char* command) {
 int countFlags(IntMatrix* screen) {
     int total = 0;
     int i, j;
+
     for (i = 0; i < screen->rows; i++) {
         for (j = 0; j < screen->cols; j++) {
             if (screen->mat[i][j] == FLAG) total++;
         }
     }
+
     return total;
 }
 
@@ -549,6 +558,7 @@ enum gameConsts menuGame(int *rows, int *cols, int *bombCount) {
 
     revealGame(screen);
     printGame(field, screen);
+
     if (result == LOST) {
         printf(RED);
         printf("\n YOU LOST!");
@@ -556,6 +566,7 @@ enum gameConsts menuGame(int *rows, int *cols, int *bombCount) {
         printf(GREEN);
         printf("\n YOU WON!");
     }
+
     printf(DEFAULT_COLOR);
 
     time_t endTime = time(NULL);
@@ -568,6 +579,7 @@ enum gameConsts menuGame(int *rows, int *cols, int *bombCount) {
 
     result = interpreter(field, screen, command, FALSE, bombCount);
     deallocate(field, screen, command);
+
     return result;
 }
 

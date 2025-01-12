@@ -2,16 +2,20 @@
 *.o
 *.obj
 
-# Precompiled Headers
+# Precompiled headers
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
+# Zig cache and build outputs
+.zig-cache/
+zig-out/
+
+# Compiled dynamic libraries
 *.so
 *.dylib
 *.dll
 
-# Compiled Static libraries
+# Compiled static libraries
 *.a
 *.lib
 

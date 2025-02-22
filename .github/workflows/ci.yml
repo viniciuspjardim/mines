@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "Run your script here"
+      - run: echo "Setting up the environment"
       - run: pwd
       - run: ls -la
+      - run: uname
+      - run: uname -i

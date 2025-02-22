@@ -17,3 +17,7 @@ jobs:
       - run: ls -la
       - run: uname
       - run: uname -i
+      - run: wget https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz
+      - run: tar -xf zig-linux-x86_64-0.13.0.tar.xz
+      - run: export PATH=$PATH:$(pwd)/zig-linux-x86_64-0.13.0
+      - run: zig version

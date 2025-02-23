@@ -22,8 +22,9 @@ jobs:
       - run: tar -xf zig-linux-x86_64-0.13.0.tar.xz
       - run: ls -la
       - run: ls -la ./zig-linux-x86_64-0.13.0
-      - run: /home/runner/work/mines/mines/zig-linux-x86_64-0.13.0/zig version
-      - run: export PATH=$PATH:/home/runner/work/mines/mines/zig-linux-x86_64-0.13.0
+      - run: ${{ github.workspace }}/zig-linux-x86_64-0.13.0/zig version
+      - name: Add Zig to PATH
+        run: echo "${{ github.workspace }}/zig-linux-x86_64-0.13.0" >> $GITHUB_PATH
       - run: echo $PATH
       - run: ls -la /home
       - run: zig version

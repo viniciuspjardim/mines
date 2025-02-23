@@ -8,24 +8,15 @@ permissions:
   contents: read
 jobs:
   build:
-    timeout-minutes: 5
+    timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "Setting up the environment"
-      - run: pwd
-      - run: ls -la
-      - run: uname
-      - run: uname -i
       - run: wget https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz
-      - run: ls -la
       - run: tar -xf zig-linux-x86_64-0.13.0.tar.xz
-      - run: ls -la
-      - run: ls -la ./zig-linux-x86_64-0.13.0
-      - run: ${{ github.workspace }}/zig-linux-x86_64-0.13.0/zig version
       - name: Add Zig to PATH
         run: echo "${{ github.workspace }}/zig-linux-x86_64-0.13.0" >> $GITHUB_PATH
-      - run: echo $PATH
-      - run: ls -la /home
       - run: zig version
       - run: zig build
+      - run: ls -la ./zig-out/bin
+      - run: ./zig-out/bin/mines

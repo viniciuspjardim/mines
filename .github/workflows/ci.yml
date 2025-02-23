@@ -23,3 +23,8 @@ jobs:
       - run: ls -la
       - run: ls -la ./zig-linux-x86_64-0.13.0
       - run: /home/runner/work/mines/mines/zig-linux-x86_64-0.13.0/zig version
+      - run: export PATH=$PATH:/home/runner/work/mines/mines/zig-linux-x86_64-0.13.0
+      - run: echo $PATH
+      - run: ls -la /home
+      - run: zig version
+      - run: zig build
